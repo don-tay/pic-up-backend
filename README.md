@@ -1,7 +1,5 @@
 # Pic-Up Backend
 
-## Description
-
 Upload, manage and share your images!
 
 ## Local dev setup
