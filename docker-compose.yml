@@ -11,7 +11,7 @@ services:
       - POSTGRES_DB=pic_up
 
   localstack:
-    image: localstack/localstack:1.2
+    image: localstack/localstack:2.1
     ports:
       - 4566:4566
     environment:
