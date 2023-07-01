@@ -1,3 +1,4 @@
+import { IsNumber } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -8,9 +9,11 @@ import {
 } from 'typeorm';
 
 export class ImageMetadata {
+  @IsNumber()
   height: number;
+
+  @IsNumber()
   width: number;
-  compressed: boolean;
 }
 
 @Entity()

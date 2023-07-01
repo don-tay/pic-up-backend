@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { S3Service } from '../s3/s3.service';
+import { CreateImageReqDto } from './image.dto';
 import { Image } from './image.entity';
 import { ImageRepository } from './image.repository';
 
@@ -14,6 +16,18 @@ export class ImageService {
 
   findAll() {
     return this.imageRepository.find();
+  }
+
+  create(@Body() dto: CreateImageReqDto): Promise<Image> {
+    return this.imageRepository.save(dto);
+  }
+
+  softDelete(id: number): Promise<DeleteResult> {
+    return this.imageRepository.softDelete(id);
+  }
+
+  restore(id: number): Promise<UpdateResult> {
+    return this.imageRepository.restore(id);
   }
 
   getSignedUploadUrl(filename: string) {

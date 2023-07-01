@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -23,11 +23,19 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-doc', app, document);
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
+
   const port = process.env.PORT || 5200;
   const address = '0.0.0.0';
   await app.listen(port, address);
   Logger.log(`Server running. API Docs on http://${address}:${port}/api-doc`);
 }
+
 bootstrap().catch((err) => {
   Logger.error(`Unhandled error: ${err}. Shutting down.`);
   process.exit(1);
