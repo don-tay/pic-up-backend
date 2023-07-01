@@ -10,7 +10,6 @@ RUN npm run build
 # --------------> The production image
 FROM node:18-alpine
 RUN apk add dumb-init
-ENV NODE_ENV production
 WORKDIR /usr/src/app
 COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist /usr/src/app/dist
