@@ -1,4 +1,5 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -17,7 +18,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Pic-Up Backend')
     .setDescription('Pic-Up API spec')
-    .setVersion('1.0')
+    .setVersion('latest')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -30,7 +31,10 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.PORT || 5200;
+  const configService = app.get(ConfigService);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const port = configService.get<number>('PORT')!;
   const address = '0.0.0.0';
   await app.listen(port, address);
   Logger.log(`Server running. API Docs on http://${address}:${port}/api-doc`);
