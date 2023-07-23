@@ -7,7 +7,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { S3Service } from '../s3/s3.service';
-import { CreateImageReqDto } from './image.dto';
+import {
+  CreateImageReqDto,
+  GetObjKeyAndSignedUploadUrlResDto,
+} from './image.dto';
 import { Image } from './image.entity';
 import { ImageRepository } from './image.repository';
 
@@ -19,14 +22,19 @@ export class ImageService {
     private readonly s3Service: S3Service,
   ) {}
 
+  private async buildImageObjectKey(fileName: string) {
+    // TODO: Refactor to prepend username to fileName
+    const { uuidv7 } = await import('uuidv7');
+    return `${uuidv7()}-${fileName}`;
+  }
+
   findAll() {
     return this.imageRepository.find();
   }
 
   async create(@Body() dto: CreateImageReqDto): Promise<Image> {
-    // TODO: Refactor to prepend username to filename
-    if (!(await this.s3Service.objectExists(dto.name))) {
-      throw new BadRequestException(`File ${dto.name} does not exist`);
+    if (!(await this.s3Service.objectExists(dto.imageKey))) {
+      throw new BadRequestException(`File ${dto.imageKey} does not exist`);
     }
     return this.imageRepository.save(dto);
   }
@@ -39,16 +47,17 @@ export class ImageService {
     return this.imageRepository.restore(id);
   }
 
-  async getSignedUploadUrl(filename: string) {
-    // TODO: Refactor to prepend username to filename
-    if (await this.s3Service.objectExists(filename)) {
-      throw new ConflictException(`File ${filename} already exists`);
+  async getObjKeyAndSignedUploadUrl(
+    fileName: string,
+  ): Promise<GetObjKeyAndSignedUploadUrlResDto> {
+    const objKey = await this.buildImageObjectKey(fileName);
+    if (await this.s3Service.objectExists(objKey)) {
+      throw new ConflictException(`File ${objKey} already exists`);
     }
-    return this.s3Service.getSignedUploadUrl(filename);
+    return { objKey, url: await this.s3Service.getSignedUploadUrl(objKey) };
   }
 
-  getSignedDownloadUrl(filename: string) {
-    // TODO: Refactor to prepend username to filename
-    return this.s3Service.getSignedDownloadUrl(filename);
+  getSignedDownloadUrl(objKey: string) {
+    return this.s3Service.getSignedDownloadUrl(objKey);
   }
 }

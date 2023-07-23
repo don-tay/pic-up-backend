@@ -1,22 +1,16 @@
-import { PickType } from '@nestjs/mapped-types';
-import { IsNotEmpty, IsUrl, ValidateIf, ValidateNested } from 'class-validator';
-import { Image, ImageMetadata } from './image.entity';
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { ImageMetadata } from './image.entity';
 
 export class CreateImageReqDto {
-  @IsUrl()
-  url: string;
-
+  @IsString()
   @IsNotEmpty()
-  name: string;
+  imageKey: string;
 
-  @ValidateIf((_, value) => value !== null)
   @ValidateNested()
-  metadata: ImageMetadata | null;
+  metadata: ImageMetadata;
 }
 
-export class UpdateImageReqDto extends PickType(Image, [
-  'url',
-  'name',
-  'metadata',
-  'deletedAt',
-]) {}
+export class GetObjKeyAndSignedUploadUrlResDto {
+  objKey: string;
+  url: string;
+}
