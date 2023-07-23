@@ -1,4 +1,9 @@
-import { Body, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { S3Service } from '../s3/s3.service';
@@ -18,7 +23,11 @@ export class ImageService {
     return this.imageRepository.find();
   }
 
-  create(@Body() dto: CreateImageReqDto): Promise<Image> {
+  async create(@Body() dto: CreateImageReqDto): Promise<Image> {
+    // TODO: Refactor to prepend username to filename
+    if (!(await this.s3Service.objectExists(dto.name))) {
+      throw new BadRequestException(`File ${dto.name} does not exist`);
+    }
     return this.imageRepository.save(dto);
   }
 
@@ -31,10 +40,10 @@ export class ImageService {
   }
 
   async getSignedUploadUrl(filename: string) {
+    // TODO: Refactor to prepend username to filename
     if (await this.s3Service.objectExists(filename)) {
       throw new ConflictException(`File ${filename} already exists`);
     }
-    // TODO: Refactor to prepend username to filename
     return this.s3Service.getSignedUploadUrl(filename);
   }
 
