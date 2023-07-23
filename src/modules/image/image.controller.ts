@@ -8,7 +8,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { CreateImageReqDto } from './image.dto';
+import {
+  CreateImageReqDto,
+  GetObjKeyAndSignedUploadUrlResDto,
+} from './image.dto';
 import { Image } from './image.entity';
 import { ImageService } from './image.service';
 
@@ -37,12 +40,14 @@ export class ImageController {
   }
 
   @Get('upload-url/:filename')
-  getSignedUploadUrl(@Param('filename') filename: string): Promise<string> {
-    return this.imageService.getSignedUploadUrl(filename);
+  getSignedUploadUrl(
+    @Param('filename') filename: string,
+  ): Promise<GetObjKeyAndSignedUploadUrlResDto> {
+    return this.imageService.getObjKeyAndSignedUploadUrl(filename);
   }
 
-  @Get('download-url/:filename')
-  getSigneddownloadUrl(@Param('filename') filename: string): Promise<string> {
-    return this.imageService.getSignedDownloadUrl(filename);
+  @Get('download-url/:objKey')
+  getSignedDownloadUrl(@Param('objKey') objKey: string): Promise<string> {
+    return this.imageService.getSignedDownloadUrl(objKey);
   }
 }

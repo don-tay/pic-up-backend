@@ -5,9 +5,8 @@ export class CreateTableImage1686411623960 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS image (
         id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        url TEXT NOT NULL,
-        name TEXT NOT NULL,
-        metadata JSONB,
+        image_key TEXT NOT NULL,
+        metadata JSONB NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
         deleted_at TIMESTAMP WITH TIME ZONE

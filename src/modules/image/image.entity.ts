@@ -1,4 +1,4 @@
-import { IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -9,11 +9,17 @@ import {
 } from 'typeorm';
 
 export class ImageMetadata {
-  @IsNumber()
-  height: number;
+  @IsString()
+  @IsNotEmpty()
+  fileName: string;
 
+  @IsOptional()
   @IsNumber()
-  width: number;
+  height?: number;
+
+  @IsOptional()
+  @IsNumber()
+  width?: number;
 }
 
 @Entity()
@@ -24,13 +30,10 @@ export class Image {
   id: number;
 
   @Column()
-  url: string;
+  imageKey: string;
 
-  @Column()
-  name: string;
-
-  @Column({ type: 'jsonb', nullable: true })
-  metadata: ImageMetadata | null;
+  @Column({ type: 'jsonb' })
+  metadata: ImageMetadata;
 
   @CreateDateColumn()
   createdAt: Date;
