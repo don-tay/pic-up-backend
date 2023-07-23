@@ -1,4 +1,4 @@
-import { Body, Injectable } from '@nestjs/common';
+import { Body, ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { S3Service } from '../s3/s3.service';
@@ -30,7 +30,10 @@ export class ImageService {
     return this.imageRepository.restore(id);
   }
 
-  getSignedUploadUrl(filename: string) {
+  async getSignedUploadUrl(filename: string) {
+    if (await this.s3Service.objectExists(filename)) {
+      throw new ConflictException(`File ${filename} already exists`);
+    }
     // TODO: Refactor to prepend username to filename
     return this.s3Service.getSignedUploadUrl(filename);
   }
