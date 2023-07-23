@@ -1,5 +1,6 @@
 import {
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
@@ -27,6 +28,20 @@ export class S3Service {
         secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
       },
     });
+  }
+
+  // check if object exists
+  async objectExists(objectKey: string) {
+    const command = new HeadObjectCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Key: objectKey,
+    });
+    try {
+      await this.s3.send(command);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   async getSignedUploadUrl(objectKey: string) {
